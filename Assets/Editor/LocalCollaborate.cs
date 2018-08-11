@@ -33,6 +33,7 @@ public class LocalCollaborate : EditorWindow {
             try
             {
                 LocalRepository = new Repository(".");
+                RemotePath = LocalRepository.Network.Remotes["origin"].Url;
             }
             catch (RepositoryNotFoundException e)
             {
