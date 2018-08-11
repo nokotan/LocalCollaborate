@@ -1,10 +1,12 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 using LibGit2Sharp;
 
 public class LocalCollaborate : EditorWindow {
 
+    [SerializeField]
     string RemotePath;
     Repository LocalRepository;
 
@@ -14,11 +16,14 @@ public class LocalCollaborate : EditorWindow {
         GetWindow<LocalCollaborate>();
     }
 
+    [SerializeField]
     int Selected;
     Vector2 ScrollRect;
     string CommitMessage;
 
+    [SerializeField]
     string UserName;
+    [SerializeField]
     string EMail;
 
     void OnGUI()
@@ -46,19 +51,23 @@ public class LocalCollaborate : EditorWindow {
             EditorGUI.BeginChangeCheck();
             RemotePath = EditorGUILayout.TextField(RemotePath);
 
+            Remote remote = LocalRepository.Network.Remotes["origin"];
+
             if (EditorGUI.EndChangeCheck())
             {
-                if (LocalRepository.Network.Remotes["origin"] != null)
+
+                if (remote == null)
                 {
-                    LocalRepository.Network.Remotes.Remove("origin");
+                    remote = LocalRepository.Network.Remotes.Add("origin", RemotePath);
+                }
+                else
+                {
+                    LocalRepository.Network.Remotes.Update(remote, r => r.Url = RemotePath);
                 }
 
-                var Remote = LocalRepository.Network.Remotes.Add("origin", RemotePath);
-
                 LocalRepository.Branches.Update(LocalRepository.Head,
-                    b => b.Remote = Remote.Name,
+                    b => b.Remote = remote.Name,
                     b => b.UpstreamBranch = LocalRepository.Head.CanonicalName);
-                    
             }
 
             if (GUILayout.Button("Push"))
@@ -66,11 +75,25 @@ public class LocalCollaborate : EditorWindow {
                 LocalRepository.Network.Push(LocalRepository.Head);
             }
 
+            if (GUILayout.Button("Fetch"))
+            {
+                LocalRepository.Network.Fetch(remote);
+            }
+       
             EditorGUILayout.LabelField("Name");
             UserName = EditorGUILayout.TextField(UserName);
 
             EditorGUILayout.LabelField("EMail");
             EMail = EditorGUILayout.TextField(EMail);
+
+            var trackingBranch = LocalRepository.Head.TrackedBranch;
+            var log = LocalRepository.Commits.QueryBy(new CommitFilter
+            { IncludeReachableFrom = trackingBranch.Tip.Id, ExcludeReachableFrom = LocalRepository.Head.Tip.Id });
+
+            if (log.Count() > 0)
+            {
+                EditorGUILayout.LabelField("There is remote change!");
+            }
         }
 
         if (Selected == 1)
