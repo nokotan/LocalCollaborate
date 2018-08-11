@@ -48,7 +48,22 @@ public class LocalCollaborate : EditorWindow {
 
             if (EditorGUI.EndChangeCheck())
             {
+                if (LocalRepository.Network.Remotes["origin"] != null)
+                {
+                    LocalRepository.Network.Remotes.Remove("origin");
+                }
 
+                var Remote = LocalRepository.Network.Remotes.Add("origin", RemotePath);
+
+                LocalRepository.Branches.Update(LocalRepository.Head,
+                    b => b.Remote = Remote.Name,
+                    b => b.UpstreamBranch = LocalRepository.Head.CanonicalName);
+                    
+            }
+
+            if (GUILayout.Button("Push"))
+            {
+                LocalRepository.Network.Push(LocalRepository.Head);
             }
 
             EditorGUILayout.LabelField("Name");
