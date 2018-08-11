@@ -80,6 +80,17 @@ public class LocalCollaborate : EditorWindow {
             {
                 LocalRepository.Network.Fetch(remote);
             }
+
+            if (GUILayout.Button("Merge"))
+            {
+                var Sign = new Signature(new Identity(UserName, EMail), System.DateTime.Now);
+                var Result = LocalRepository.Merge(LocalRepository.Head.TrackedBranch, Sign);
+
+                if (Result.Status == MergeStatus.Conflicts)
+                {
+                    Debug.Log("Conflict!");
+                }
+            }
        
             EditorGUILayout.LabelField("Name");
             UserName = EditorGUILayout.TextField(UserName);
