@@ -26,6 +26,8 @@ public class LocalCollaborate : EditorWindow {
     [SerializeField]
     string EMail;
 
+    string StatusString = "";
+
     void OnGUI()
     {
         if (LocalRepository == null)
@@ -74,6 +76,7 @@ public class LocalCollaborate : EditorWindow {
             if (GUILayout.Button("Push"))
             {
                 LocalRepository.Network.Push(LocalRepository.Head);
+                StatusString = "Push Finished";
             }
 
             if (GUILayout.Button("Fetch"))
@@ -92,8 +95,9 @@ public class LocalCollaborate : EditorWindow {
                 }
 
                 AssetDatabase.Refresh();
+                StatusString = "Merge Finished";
             }
-       
+
             EditorGUILayout.LabelField("Name");
             UserName = EditorGUILayout.TextField(UserName);
 
@@ -106,7 +110,7 @@ public class LocalCollaborate : EditorWindow {
 
             if (log.Count() > 0)
             {
-                EditorGUILayout.LabelField("There is remote change!");
+                StatusString = "There is remote changes!";
             }
         }
 
@@ -156,7 +160,11 @@ public class LocalCollaborate : EditorWindow {
                 var Sign = new Signature(new Identity(UserName, EMail), System.DateTime.Now);
                 LocalRepository.Stage("*");
                 LocalRepository.Commit(CommitMessage, Sign, Sign);
+
+                StatusString = "Commit Finished!";
             }
         }
+
+        EditorGUILayout.LabelField(StatusString);
     }
 }
