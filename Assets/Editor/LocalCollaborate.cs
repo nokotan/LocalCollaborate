@@ -90,6 +90,8 @@ public class LocalCollaborate : EditorWindow {
                 {
                     Debug.Log("Conflict!");
                 }
+
+                AssetDatabase.Refresh();
             }
        
             EditorGUILayout.LabelField("Name");
