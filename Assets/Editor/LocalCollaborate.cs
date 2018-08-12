@@ -171,6 +171,7 @@ public class LocalCollaborate : EditorWindow {
             }
         }
 
+
         EditorGUILayout.LabelField(StatusString);
     }
 }
