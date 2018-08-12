@@ -19,6 +19,7 @@ public class LocalCollaborate : EditorWindow {
     [SerializeField]
     int Selected;
     Vector2 ScrollRect;
+    Vector2 ScrollRectCommit;
     string CommitMessage;
 
     [SerializeField]
@@ -133,10 +134,14 @@ public class LocalCollaborate : EditorWindow {
 
             using (new EditorGUI.IndentLevelScope())
             {
+                ScrollRectCommit = EditorGUILayout.BeginScrollView(ScrollRectCommit);
+
                 foreach (var commit in LocalRepository.Head.Commits)
                 {
-                    EditorGUILayout.LabelField(commit.Id.ToString(), commit.Message);
+                    EditorGUILayout.LabelField(commit.Id.ToString().Substring(0, 8), commit.Message);
                 }
+
+                EditorGUILayout.EndScrollView();
             }
 
             EditorGUILayout.LabelField("Status");
@@ -161,6 +166,7 @@ public class LocalCollaborate : EditorWindow {
                 LocalRepository.Stage("*");
                 LocalRepository.Commit(CommitMessage, Sign, Sign);
 
+                CommitMessage = "";
                 StatusString = "Commit Finished!";
             }
         }
