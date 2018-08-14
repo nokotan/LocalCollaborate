@@ -71,12 +71,13 @@ public class LocalCollaborate : EditorWindow {
                
                 LocalRepository.Branches.Update(LocalRepository.Head,
                     b => b.Remote = remote.Name,
-                    b => b.UpstreamBranch = LocalRepository.Head.CanonicalName);
+                    b => b.UpstreamBranch = LocalRepository.Head.CanonicalName
+                );
             }
 
             if (GUILayout.Button("Push"))
             {
-                LocalRepository.Network.Push(LocalRepository.Head);
+                LocalRepository.Network.Push(LocalRepository.Network.Remotes["origin"], LocalRepository.Head.CanonicalName);
                 StatusString = "Push Finished";
             }
 
