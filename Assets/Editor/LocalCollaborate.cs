@@ -88,7 +88,7 @@ public class LocalCollaborate : EditorWindow {
             if (GUILayout.Button("Merge"))
             {
                 var Sign = new Signature(new Identity(UserName, EMail), System.DateTime.Now);
-                var Result = LocalRepository.Merge(LocalRepository.Head.TrackedBranch, Sign);
+                var Result = LocalRepository.Merge(LocalRepository.Branches["origin/master"], Sign);
 
                 if (Result.Status == MergeStatus.Conflicts)
                 {
