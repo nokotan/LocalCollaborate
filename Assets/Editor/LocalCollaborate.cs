@@ -75,8 +75,8 @@ public class LocalCollaborate : EditorWindow {
             }
 
             if (GUILayout.Button("Push"))
-            {
-                LocalRepository.Network.Push(LocalRepository.Branches["origin/master"]);
+            {      
+                LocalRepository.Network.Push(LocalRepository.Head);
                 StatusString = "Push Finished";
             }
 
