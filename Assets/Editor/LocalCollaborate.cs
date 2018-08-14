@@ -68,14 +68,14 @@ public class LocalCollaborate : EditorWindow {
                 {
                     LocalRepository.Network.Remotes.Update(remote, r => r.Url = RemotePath);
                 }
-
+               
                 LocalRepository.Branches.Update(LocalRepository.Head,
                     b => b.Remote = remote.Name,
                     b => b.UpstreamBranch = LocalRepository.Head.CanonicalName);
             }
 
             if (GUILayout.Button("Push"))
-            {      
+            {
                 LocalRepository.Network.Push(LocalRepository.Head);
                 StatusString = "Push Finished";
             }
@@ -83,18 +83,19 @@ public class LocalCollaborate : EditorWindow {
             if (GUILayout.Button("Fetch"))
             {
                 LocalRepository.Network.Fetch(remote);
+                StatusString = LocalRepository.Head.CanonicalName;
             }
 
             if (GUILayout.Button("Merge"))
             {
                 var Sign = new Signature(new Identity(UserName, EMail), System.DateTime.Now);
-                var Result = LocalRepository.Merge(LocalRepository.Branches["origin/master"], Sign);
-
+                var Result = LocalRepository.Merge(LocalRepository.Head.TrackedBranch, Sign);
+                
                 if (Result.Status == MergeStatus.Conflicts)
                 {
                     Debug.Log("Conflict!");
                 }
-
+               
                 AssetDatabase.Refresh();
                 StatusString = "Merge Finished";
             }
