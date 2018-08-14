@@ -77,7 +77,7 @@ public class LocalCollaborate : EditorWindow {
 
             if (GUILayout.Button("Push"))
             {
-                LocalRepository.Network.Push(LocalRepository.Network.Remotes["origin"], LocalRepository.Head.FriendlyName);
+                LocalRepository.Network.Push(LocalRepository.Network.Remotes["origin"], LocalRepository.Head.CanonicalName);
                 StatusString = "Push Finished";
             }
 
