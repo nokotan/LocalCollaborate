@@ -11,5 +11,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc554556a4729f248b322f40f403411d, type: 3}
   m_Name: LocalCollaborateUserData
   m_EditorClassIdentifier: 
-  userName: 
-  eMailAddress: 
+  userName: aaaabbb
+  eMailAddress: vvvv

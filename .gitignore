@@ -33,4 +33,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+# Local Collaborate
 /ProjectSettings/ProjectVersion.txt
+/Assets/Editor/LocalCollaborateUserData.asset
+/Assets/Editor/LocalCollaborateUserData.asset.meta

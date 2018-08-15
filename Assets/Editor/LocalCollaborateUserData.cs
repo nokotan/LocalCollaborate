@@ -31,6 +31,7 @@ public class LocalCollaborateUserData : ScriptableObject {
         }
         set
         {
+            Undo.RecordObject(Instance, "LocalCollaborate");
             Instance.userName = value;
         }
     }
@@ -43,6 +44,7 @@ public class LocalCollaborateUserData : ScriptableObject {
         }
         set
         {
+            Undo.RecordObject(Instance, "LocalCollaborate");
             Instance.eMailAddress = value;
         }
     }
