@@ -246,6 +246,8 @@ public class LocalCollaborate : EditorWindow {
         if (GUILayout.Button("Fetch"))
         {
             Fetch();
+
+            UpdateRemoteChangesList();
         }
 
         if (GUILayout.Button("Merge"))
@@ -312,6 +314,14 @@ public class LocalCollaborate : EditorWindow {
             StatusString = "Commit Finished!";
 
             UpdateCommitData();
+        }
+    }
+
+    void UpdateRemoteChangesList()
+    {
+        foreach (var item in LocalRepository.Diff.Compare<TreeChanges>())
+        {
+            Debug.Log(item.Path);
         }
     }
 
