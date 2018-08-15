@@ -170,6 +170,7 @@ public class LocalCollaborate : EditorWindow {
 
             UpdateCommitData();
             UpdateFileStatus();
+            UpdateRemoteChangesList();
             
             return false;
         }
@@ -197,6 +198,7 @@ public class LocalCollaborate : EditorWindow {
         var remote = LocalRepository.Network.Remotes["origin"];
         LocalRepository.Network.Fetch(remote);
 
+        UpdateRemoteChangesList();
         Debug.Log("Fetched");
     }
 
@@ -214,6 +216,7 @@ public class LocalCollaborate : EditorWindow {
         StatusString = "Merge Finished";
 
         UpdateCommitData();
+        UpdateRemoteChangesList();
     }
 
     void OnInspectorUpdate()
@@ -248,8 +251,6 @@ public class LocalCollaborate : EditorWindow {
         if (GUILayout.Button("Fetch"))
         {
             Fetch();
-
-            UpdateRemoteChangesList();
         }
 
         if (GUILayout.Button("Merge"))
