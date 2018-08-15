@@ -235,6 +235,8 @@ public class LocalCollaborate : EditorWindow {
         }
     }
 
+    Vector2 DiffScrollRect;
+
     void OnGUIInSynclonizeTab()
     {
         if (GUILayout.Button("Push"))
@@ -253,6 +255,28 @@ public class LocalCollaborate : EditorWindow {
         if (GUILayout.Button("Merge"))
         {
             Merge();
+        }
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Diffs");
+
+        if (GUILayout.Button("Refresh"))
+        {
+            UpdateRemoteChangesList();
+        }
+
+        EditorGUILayout.EndHorizontal();
+
+        using (new EditorGUI.IndentLevelScope())
+        {
+            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box);
+
+            foreach (var item in DiffFileStatusData) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
+            {
+                EditorGUILayout.LabelField(item.status.ToString(), item.filePath);
+            }
+
+            EditorGUILayout.EndScrollView();
         }
     }
 
@@ -317,11 +341,17 @@ public class LocalCollaborate : EditorWindow {
         }
     }
 
+    List<FileStatusBaseData> DiffFileStatusData = new List<FileStatusBaseData>();
+
     void UpdateRemoteChangesList()
     {
-        foreach (var item in LocalRepository.Diff.Compare<TreeChanges>())
+        DiffFileStatusData.Clear();
+
+        var Diff = LocalRepository.Diff.Compare<TreeChanges>(LocalRepository.Head.Tip.Tree, LocalRepository.Head.TrackedBranch.Tip.Tree);
+
+        foreach (var item in Diff.Modified)
         {
-            Debug.Log(item.Path);
+            DiffFileStatusData.Add(new FileStatusBaseData() { filePath = item.Path, status = FileStatus.ModifiedInWorkdir });
         }
     }
 
