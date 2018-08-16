@@ -35,6 +35,8 @@ public class LocalCollaborate : EditorWindow {
         }
     }
 
+#region CommitList
+
     struct CommitBaseData
     {
         public string Id { get; set; }
@@ -60,6 +62,10 @@ public class LocalCollaborate : EditorWindow {
         Debug.Log("Commit Data Updated");
     }
 
+#endregion
+
+#region FileList
+
     struct FileStatusBaseData
     {
         public FileStatus status { get; set; }
@@ -84,23 +90,18 @@ public class LocalCollaborate : EditorWindow {
 
     }
 
-    Repository LocalRepository;
+#endregion
 
-    [MenuItem("Window/LocalCollaborate/Open")]
+    Repository LocalRepository;
+    SettingTab settingTab;
+
+#region Setup
+
+    [MenuItem("Window/LocalCollaborate")]
     static void Open()
     {
         GetWindow<LocalCollaborate>();
     }
-
-    [SerializeField]
-    int Selected;
-    Vector2 ScrollRect;
-    Vector2 ScrollRectCommit;
-    string CommitMessage;
-
-    string StatusString = "";
-
-    SettingTab settingTab;
 
     void InitializeSettingTab()
     {
@@ -180,7 +181,9 @@ public class LocalCollaborate : EditorWindow {
         }
     }
 
-    void Awake()
+#endregion
+
+    private void OnEnable()
     {
         Debug.Log("Awaked");
         
@@ -191,7 +194,7 @@ public class LocalCollaborate : EditorWindow {
         CommitData = new List<CommitBaseData>();
     }
 
-    DateTime LastFetchedTime;
+#region Git Instructions
 
     void Fetch()
     {
@@ -219,6 +222,10 @@ public class LocalCollaborate : EditorWindow {
         UpdateRemoteChangesList();
     }
 
+#endregion
+
+    DateTime LastFetchedTime;
+
     void OnInspectorUpdate()
     {
         if (DateTime.Now - LastFetchedTime > TimeSpan.FromSeconds(2.0))
@@ -238,7 +245,21 @@ public class LocalCollaborate : EditorWindow {
         }
     }
 
+    void OnProjectChange()
+    {
+        UpdateFileStatus();
+    }
+
+#region OnGUI
+
+    int Selected;
+
     Vector2 DiffScrollRect;
+    Vector2 ScrollRect;
+    Vector2 ScrollRectCommit;
+    string CommitMessage;
+
+    string StatusString = "";
 
     void OnGUIInSynclonizeTab()
     {
@@ -390,8 +411,6 @@ public class LocalCollaborate : EditorWindow {
         EditorGUILayout.LabelField(StatusString);
     }
 
-    void OnProjectChange()
-    {
-        UpdateFileStatus();
-    }
+#endregion
+
 }
