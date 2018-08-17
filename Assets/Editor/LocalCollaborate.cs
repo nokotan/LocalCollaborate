@@ -87,7 +87,6 @@ public class LocalCollaborate : EditorWindow {
             .ToList();
 
         Debug.Log("File Status Updated");
-
     }
 
     #endregion
@@ -118,6 +117,8 @@ public class LocalCollaborate : EditorWindow {
         {
             DiffFileStatusDataRemote.Add(new FileStatusBaseData() { filePath = item.Path, status = FileStatus.ModifiedInWorkdir });
         }
+
+        Debug.Log("Updated File Status");
     }
 
     Repository LocalRepository;
@@ -215,7 +216,7 @@ public class LocalCollaborate : EditorWindow {
 
     private void OnEnable()
     {
-        Debug.Log("Awaked");
+        Debug.Log("OnEnable");
         
         InitializeSettingTab();
         InitializeRepository();
@@ -224,7 +225,41 @@ public class LocalCollaborate : EditorWindow {
         CommitData = new List<CommitBaseData>();
     }
 
+    bool HasRemoteChange
+    {
+        get
+        {
+            if (LocalRepository == null || LocalRepository.Head.TrackedBranch == null)
+            {
+                return false;
+            }
+
+            var trackingBranch = LocalRepository.Head.TrackedBranch;
+            var log = LocalRepository.Commits.QueryBy(new CommitFilter
+            { IncludeReachableFrom = trackingBranch.Tip.Id, ExcludeReachableFrom = LocalRepository.Head.Tip.Id });
+
+            return log.Count() > 0;
+        }
+    }
+
 #region Git Instructions
+
+    void Push()
+    {
+        if (HasRemoteChange)
+        {
+            StatusString = "There is remote change! Please merge at first.";
+            Debug.Log("Push Failed: Remote Change");
+        }
+        else
+        {
+            LocalRepository.Network.Push(LocalRepository.Network.Remotes["origin"], LocalRepository.Head.CanonicalName);
+            StatusString = "Push Finished";
+
+            UpdateRemoteChangesList();
+            Debug.Log("Pushed");
+        }       
+    }
 
     void Fetch()
     {
@@ -262,11 +297,7 @@ public class LocalCollaborate : EditorWindow {
         {
             Fetch();
 
-            var trackingBranch = LocalRepository.Head.TrackedBranch;
-            var log = LocalRepository.Commits.QueryBy(new CommitFilter
-            { IncludeReachableFrom = trackingBranch.Tip.Id, ExcludeReachableFrom = LocalRepository.Head.Tip.Id });
-
-            if (log.Count() > 0)
+            if (HasRemoteChange)
             {
                 StatusString = "There is remote changes!";
             }
@@ -293,22 +324,6 @@ public class LocalCollaborate : EditorWindow {
 
     void OnGUIInSynclonizeTab()
     {
-        if (GUILayout.Button("Push"))
-        {
-            LocalRepository.Network.Push(LocalRepository.Network.Remotes["origin"], LocalRepository.Head.CanonicalName);
-            StatusString = "Push Finished";
-        }
-
-        if (GUILayout.Button("Fetch"))
-        {
-            Fetch();
-        }
-
-        if (GUILayout.Button("Merge"))
-        {
-            Merge();
-        }
-
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Diffs");
 
@@ -319,7 +334,15 @@ public class LocalCollaborate : EditorWindow {
 
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Local Changes");
+
+        if (GUILayout.Button("Push"))
+        {
+            Push();
+        }
+
+        EditorGUILayout.EndHorizontal();
 
         using (new EditorGUI.IndentLevelScope())
         {
@@ -333,7 +356,15 @@ public class LocalCollaborate : EditorWindow {
             EditorGUILayout.EndScrollView();
         }
 
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Remote Changes");
+
+        if (GUILayout.Button("Merge"))
+        {
+            Merge();
+        }
+
+        EditorGUILayout.EndHorizontal();
 
         using (new EditorGUI.IndentLevelScope())
         {
