@@ -90,10 +90,40 @@ public class LocalCollaborate : EditorWindow {
 
     }
 
-#endregion
+    #endregion
+
+#region Diff
+
+    List<FileStatusBaseData> DiffFileStatusData = new List<FileStatusBaseData>();
+    List<FileStatusBaseData> DiffFileStatusDataRemote = new List<FileStatusBaseData>();
+
+    void UpdateRemoteChangesList()
+    {
+        var MergeBase = LocalRepository.ObjectDatabase.FindMergeBase(LocalRepository.Head.Tip, LocalRepository.Head.TrackedBranch.Tip);
+
+        DiffFileStatusData.Clear();
+
+        var Diff = LocalRepository.Diff.Compare<TreeChanges>(MergeBase.Tree, LocalRepository.Head.Tip.Tree);
+
+        foreach (var item in Diff.Modified)
+        {
+            DiffFileStatusData.Add(new FileStatusBaseData() { filePath = item.Path, status = FileStatus.ModifiedInWorkdir });
+        }
+
+        DiffFileStatusDataRemote.Clear();
+
+        Diff = LocalRepository.Diff.Compare<TreeChanges>(MergeBase.Tree, LocalRepository.Head.TrackedBranch.Tip.Tree);
+
+        foreach (var item in Diff.Modified)
+        {
+            DiffFileStatusDataRemote.Add(new FileStatusBaseData() { filePath = item.Path, status = FileStatus.ModifiedInWorkdir });
+        }
+    }
 
     Repository LocalRepository;
     SettingTab settingTab;
+
+    #endregion
 
 #region Setup
 
@@ -289,11 +319,27 @@ public class LocalCollaborate : EditorWindow {
 
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.LabelField("Local Changes");
+
         using (new EditorGUI.IndentLevelScope())
         {
             DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box);
 
             foreach (var item in DiffFileStatusData) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
+            {
+                EditorGUILayout.LabelField(item.status.ToString(), item.filePath);
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        EditorGUILayout.LabelField("Remote Changes");
+
+        using (new EditorGUI.IndentLevelScope())
+        {
+            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box);
+
+            foreach (var item in DiffFileStatusDataRemote) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
             {
                 EditorGUILayout.LabelField(item.status.ToString(), item.filePath);
             }
@@ -360,20 +406,6 @@ public class LocalCollaborate : EditorWindow {
             StatusString = "Commit Finished!";
 
             UpdateCommitData();
-        }
-    }
-
-    List<FileStatusBaseData> DiffFileStatusData = new List<FileStatusBaseData>();
-
-    void UpdateRemoteChangesList()
-    {
-        DiffFileStatusData.Clear();
-
-        var Diff = LocalRepository.Diff.Compare<TreeChanges>(LocalRepository.Head.Tip.Tree, LocalRepository.Head.TrackedBranch.Tip.Tree);
-
-        foreach (var item in Diff.Modified)
-        {
-            DiffFileStatusData.Add(new FileStatusBaseData() { filePath = item.Path, status = FileStatus.ModifiedInWorkdir });
         }
     }
 
