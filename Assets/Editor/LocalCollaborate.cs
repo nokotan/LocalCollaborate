@@ -323,7 +323,7 @@ public class LocalCollaborate : EditorWindow {
 
         using (new EditorGUI.IndentLevelScope())
         {
-            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box);
+            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box, GUILayout.MinHeight(50.0f), GUILayout.MaxHeight(500.0f));
 
             foreach (var item in DiffFileStatusData) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
             {
@@ -337,7 +337,7 @@ public class LocalCollaborate : EditorWindow {
 
         using (new EditorGUI.IndentLevelScope())
         {
-            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box);
+            DiffScrollRect = EditorGUILayout.BeginScrollView(DiffScrollRect, GUI.skin.box, GUILayout.MinHeight(50.0f), GUILayout.MaxHeight(500.0f));
 
             foreach (var item in DiffFileStatusDataRemote) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
             {
@@ -362,7 +362,7 @@ public class LocalCollaborate : EditorWindow {
 
         using (new EditorGUI.IndentLevelScope())
         {
-            ScrollRectCommit = EditorGUILayout.BeginScrollView(ScrollRectCommit, GUI.skin.box);
+            ScrollRectCommit = EditorGUILayout.BeginScrollView(ScrollRectCommit, GUI.skin.box, GUILayout.MinHeight(50.0f), GUILayout.MaxHeight(500.0f));
 
             foreach (var commit in CommitData)
             {
@@ -384,7 +384,7 @@ public class LocalCollaborate : EditorWindow {
 
         using (new EditorGUI.IndentLevelScope())
         {
-            ScrollRect = EditorGUILayout.BeginScrollView(ScrollRect, GUI.skin.box);
+            ScrollRect = EditorGUILayout.BeginScrollView(ScrollRect, GUI.skin.box, GUILayout.MinHeight(50.0f), GUILayout.MaxHeight(500.0f));
 
             foreach (var item in FileStatusData) // .Where(obj => obj.State != FileStatus.NewInWorkdir))
             {
